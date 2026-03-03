@@ -375,40 +375,40 @@ def score_color(score: int) -> str:
 
 
 def score_label(score: int) -> str:
-    if score >= 75: return "🟢 Excellente"
-    if score >= 50: return "🔵 Bonne"
-    if score >= 25: return "🟡 Faible"
-    return "🔴 Invisible"
+    if score >= 75: return " Excellente"
+    if score >= 50: return " Bonne"
+    if score >= 25: return " Faible"
+    return " Invisible"
 
 
 # ─── FULL ANALYSIS PIPELINE ───────────────────────────────────────────────────
 def run_analysis(client: Groq, domain: str, progress_cb):
     domain = domain.strip().lower().replace("https://", "").replace("http://", "").rstrip("/")
 
-    progress_cb(0.05, "🔍 Analyse du secteur...")
+    progress_cb(0.05, " Analyse du secteur...")
     sector_info = detect_sector(client, domain)
     time.sleep(0.3)
 
-    progress_cb(0.15, "💡 Génération des requêtes types...")
+    progress_cb(0.15, " Génération des requêtes types...")
     queries = generate_queries(client, domain, sector_info)
     time.sleep(0.3)
 
     query_results = []
     for i, query in enumerate(queries):
         pct = 0.2 + (i / len(queries)) * 0.55
-        progress_cb(pct, f"🤖 Analyse requête {i+1}/{len(queries)} : « {query[:50]}... »")
+        progress_cb(pct, f" Analyse requête {i+1}/{len(queries)} : « {query[:50]}... »")
         result = analyze_query_visibility(client, domain, query, sector_info)
         result["query"] = query
         query_results.append(result)
         time.sleep(0.2)
 
-    progress_cb(0.80, "🧠 Génération des recommandations GEO...")
+    progress_cb(0.80, " Génération des recommandations GEO...")
     recommendations = generate_recommendations(client, domain, sector_info, query_results)
     time.sleep(0.3)
 
     score = compute_score(query_results)
 
-    progress_cb(1.0, "✅ Analyse terminée !")
+    progress_cb(1.0, " Analyse terminée !")
 
     return {
         "domain": domain,
@@ -424,18 +424,18 @@ def run_analysis(client: Groq, domain: str, progress_cb):
     }
 
 
-# ─── UI ───────────────────────────────────────────────────────────────────────
+# ─── UI ───
 
 # SIDEBAR
 with st.sidebar:
-    st.markdown("### 🔭 AI Visibility Tracker")
+    st.markdown("### AI Visibility Tracker")
     st.markdown("<hr style='border-color:#2d2d3d'>", unsafe_allow_html=True)
 
     api_key = st.text_input("Clé API Groq", type="password", placeholder="gsk_...")
     st.markdown("<small style='color:#4b5563'>→ <a href='https://console.groq.com/keys' style='color:#6366f1'>Obtenir une clé gratuite</a></small>", unsafe_allow_html=True)
 
     st.markdown("<hr style='border-color:#2d2d3d'>", unsafe_allow_html=True)
-    st.markdown("### 📚 Historique")
+    st.markdown("###  Historique")
 
     if st.session_state.history:
         for idx, h in enumerate(reversed(st.session_state.history[-5:])):
@@ -462,7 +462,7 @@ Mesure la présence d'une marque dans les réponses des IA génératives (ChatGP
 
 
 # MAIN CONTENT
-st.markdown("<div class='hero-title'>🔭 AI Visibility Tracker</div>", unsafe_allow_html=True)
+st.markdown("<div class='hero-title'> AI Visibility Tracker</div>", unsafe_allow_html=True)
 st.markdown("<div class='hero-sub'>Analysez la visibilité de votre marque dans les moteurs de recherche IA</div>", unsafe_allow_html=True)
 
 col_input, col_btn = st.columns([4, 1])
@@ -476,9 +476,9 @@ with col_btn:
 # TRIGGER ANALYSIS
 if analyze_btn:
     if not api_key:
-        st.error("⚠️ Renseigne ta clé API Groq dans la barre latérale.")
+        st.error("Renseigne ta clé API Groq dans la barre latérale.")
     elif not domain_input.strip():
-        st.error("⚠️ Entre un nom de domaine à analyser.")
+        st.error("Entre un nom de domaine à analyser.")
     else:
         client = get_groq_client(api_key)
         progress_placeholder = st.empty()
